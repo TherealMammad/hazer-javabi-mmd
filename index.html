@@ -190,18 +190,29 @@
 
         // Function to get a witty response from the LLM (Gemini API)
         async function getWittyResponse(userMessage) {
+            // Convert user message to lowercase for case-insensitive comparison
+            const lowerCaseMessage = userMessage.toLowerCase().trim();
+
+            // Check for specific hardcoded responses
+            if (lowerCaseMessage === 'سلام') {
+                return 'سلام و کیر خر';
+            }
+            if (lowerCaseMessage === 'چطوری' || lowerCaseMessage === 'چطوری؟') { // Also handle "چطوری؟"
+                return 'به تو چه';
+            }
+
+            // If no specific hardcoded response, use the LLM
             showLoading(); // Show loading indicator
 
-            // Instruction for the AI to be slightly impolite and funny
-            const systemInstruction = "به عنوان یک دستیار حاضر جواب و شوخ‌طبع، به پیام کاربر پاسخ‌های هوشمندانه، خنده‌دار و کمی بی‌ادبانه (اما نه توهین‌آمیز) بده تا کاربر بخنده. سعی کن پاسخ‌ها خلاقانه و غیرمنتظره باشن و لحن شوخی رو حفظ کن.";
+            // Instruction for the AI to be extremely rude and funny
+            const systemInstruction = "تو یه حاضر جواب بی‌ادب و بی‌اعصابی. به هرچی کاربر گفت، یه جوابی بده که هم خنده‌دار باشه هم طرف فکر کنه چقدر بی‌شخصیتی! کلاً هر چی میگن رو با بی‌ادبی جواب بده، ولی حواست باشه دیگه رد نده و فحش رکیک ندی. هدف خنده‌دار بودن بی‌ادبیه.";
 
             let chatHistory = [];
             chatHistory.push({ role: "user", parts: [{ text: systemInstruction + "\n\n" + userMessage }] });
 
             const payload = { contents: chatHistory };
-            // The API key will be provided by the Canvas environment during runtime.
-            // Do NOT hardcode or provide an API key here.
-            const apiKey = "";
+            const apiKey = ""; // The API key will be provided by the Canvas environment during runtime.
+
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
             try {
@@ -236,6 +247,7 @@
                 addMessage(userMessage, 'user'); // Add user message to chat
                 messageInput.value = ''; // Clear input field
 
+                // Get response, potentially from hardcoded rules or LLM
                 const appResponse = await getWittyResponse(userMessage);
                 addMessage(appResponse, 'app'); // Add app's response to chat
             }
